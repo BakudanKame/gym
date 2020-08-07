@@ -64,6 +64,17 @@ class CatAndRatEnv(gym.Env):
         self.observation_space = spaces.Box(low, high, dtype=np.float32)
 
     def step(self, action):
+        xSep1 = cat.x - rat.x
+        ySep1 = cat.y - rat.y
+
+        if xSep1 > 0.5 * self.maxX:
+            xSep1 = self.maxX - xSep1
+        if ySep1 > 0.5 * self.maxY:
+            ySep1 = self.maxY - ySep1
+
+        distance1 = math.sqrt((xSep1)**2 + (ySep1)**2)
+
+
         if action == self.LEFT:
             cat.strat_force_x = -cat.max_force
             cat.strat_force_y = 0
@@ -120,6 +131,16 @@ class CatAndRatEnv(gym.Env):
         if rat.y <= 0:
             rat.y = self.maxY + rat.y
 
+        xSep2 = cat.x - rat.x
+        ySep2 = cat.y - rat.y
+
+        if xSep2 > 0.5 * self.maxX:
+            xSep2 = self.maxX - xSep2
+        if ySep2 > 0.5 * self.maxY:
+            ySep2 = self.maxY - ySep2
+
+        distance2 = math.sqrt((xSep2)**2 + (ySep2)**2)
+
         self.totalFrames -= 1
         checkIfCatch = bool(
             abs(cat.x - rat.x) < 2 and abs(cat.y - rat.y) < 2
@@ -131,11 +152,14 @@ class CatAndRatEnv(gym.Env):
         )
         reward = 0
         if not checkIfCatch and not timesUp:
-            reward = -0.005
+            if distance1 - distance2 > 0:
+                reward = 1
+            else:
+                reward = -1
         elif checkIfCatch and not timesUp:
-            reward = 100
+            reward = 1000
         elif timesUp and not timesUp:
-            reward = -10
+            reward = -100
         else:
             reward = 0
 
@@ -164,7 +188,7 @@ class CatAndRatEnv(gym.Env):
 
     def close(self):
         pass
-        
+
 class DynamicsSimulator:
     def __init__(self, m, positions, velocities = [0, 0], damping = 0, dt = .01666667, max_force = 5):
         # set attributes like mass, x_0, v_0, t_0, damping from friction
@@ -219,4 +243,3 @@ class DynamicsSimulator:
         self.x, self.y = new_positions[0], new_positions[1]
         self.v_x, self.v_y = new_velocites[0], new_velocites[1]
         self.t += self.dt
-

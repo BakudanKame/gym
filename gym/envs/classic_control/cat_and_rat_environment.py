@@ -154,8 +154,10 @@ class CatAndRatEnv(gym.Env):
         if not checkIfCatch and not timesUp:
             if distance1 - distance2 > 0:
                 reward = 1
-            else:
+            elif distance1 - distance2 < 0:
                 reward = -1
+            else:
+                reward = 0
         elif checkIfCatch and not timesUp:
             reward = 1000
         elif timesUp and not timesUp:

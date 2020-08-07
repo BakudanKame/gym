@@ -91,6 +91,11 @@ register(
     max_episode_steps=500,
 )
 
+register(
+    id='CatAndRatEnvironment-v0',
+    entry_point='gym.envs.classic_control:CatAndRatEnv',
+)
+
 # Box2d
 # ----------------------------------------
 

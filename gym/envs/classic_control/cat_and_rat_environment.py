@@ -164,6 +164,9 @@ class CatAndRatEnv(gym.Env):
             reward = -1
         else:
             reward = 0
+        
+        if reward > 5000:
+            reward = 5000
 
             #theta = x; maybe include theta later?
         self.state = (cat.x, cat.y, rat.x, rat.y, cat.v_x, cat.v_y, rat.v_x, rat.v_y)

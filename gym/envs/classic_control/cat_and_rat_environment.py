@@ -10,7 +10,7 @@ import os
 class CatAndRatEnv(gym.Env):
     metadata = {'render.modes': ['console']}
     #ACTION CONSTANTS
-    LEFT = 0
+    LEFT = 8
     RIGHT = 1
     UP = 2
     DOWN = 3
@@ -18,7 +18,7 @@ class CatAndRatEnv(gym.Env):
     UP_RIGHT = 5
     DOWN_LEFT = 6
     DOWN_RIGHT = 7
-    DO_NOTHING = 8
+    DO_NOTHING = 0
 
 
 
@@ -159,9 +159,9 @@ class CatAndRatEnv(gym.Env):
             else:
                 reward = 0
         elif checkIfCatch and not timesUp:
-            reward = 1000
+            reward = 5000
         elif timesUp and not timesUp:
-            reward = -100
+            reward = -1
         else:
             reward = 0
 

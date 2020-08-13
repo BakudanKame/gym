@@ -159,7 +159,7 @@ class CatAndRatEnv(gym.Env):
             else:
                 reward = 0
         elif checkIfCatch and not timesUp:
-            reward = 5000
+            reward = 5000 - (3600 - self.totalFrames)
         elif timesUp and not timesUp:
             reward = -1
         else:

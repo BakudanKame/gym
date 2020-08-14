@@ -96,6 +96,11 @@ register(
     entry_point='gym.envs.classic_control:CatAndRatEnv',
 )
 
+register(
+    id='CatAndRatEnvironmentFixedRat-v0',
+    entry_point="gym.envs.classic_controll:,
+)
+
 # Box2d
 # ----------------------------------------
 

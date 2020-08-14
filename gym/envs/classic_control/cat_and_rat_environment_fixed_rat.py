@@ -23,7 +23,7 @@ class CatAndRatEnvFixedRat(gym.Env):
 
 
     def __init__(self):
-        super(CatAndRatEnv, self).__init__()
+        super(CatAndRatEnvFixedRat, self).__init__()
 
 
         self.maxY = 800 #replace with screenHeight from Game

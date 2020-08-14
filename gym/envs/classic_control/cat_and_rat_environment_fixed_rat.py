@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-class CatAndRatEnv(gym.Env):
+class CatAndRatEnvFixedRat(gym.Env):
     metadata = {'render.modes': ['console']}
     #ACTION CONSTANTS
     LEFT = 8

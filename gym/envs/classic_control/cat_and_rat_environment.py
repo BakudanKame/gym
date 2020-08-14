@@ -26,8 +26,8 @@ class CatAndRatEnv(gym.Env):
         super(CatAndRatEnv, self).__init__()
 
 
-        self.maxY = 100 #replace with screenHeight from Game
-        self.maxX = 100 #replace with screenWidth from Game
+        self.maxY = 800 #replace with screenHeight from Game
+        self.maxX = 1500 #replace with screenWidth from Game
         self.maxTheta = 2 * math.pi
         self.minX = 0
         self.minY = 0

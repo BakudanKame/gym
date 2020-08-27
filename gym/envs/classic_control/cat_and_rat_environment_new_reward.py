@@ -73,19 +73,19 @@ class CatAndRatEnvNewReward(gym.Env):
 
         if math.pi * (1/8) < theta and theta < math.pi * (3/8):
             correctAction = self.UP_RIGHT
-        else if math.pi * (3/8) < theta and theta < math.pi * (5/8):
+        elif math.pi * (3/8) < theta and theta < math.pi * (5/8):
             correctAction = self.UP
-        else if math.pi * (5/8) < theta and theta < math.pi * (7/8):
+        elif math.pi * (5/8) < theta and theta < math.pi * (7/8):
             correctAction = self.UP_LEFT
-        else if math.pi * (-7/8) > theta or theta > math.pi * (7/8):
+        elif math.pi * (-7/8) > theta or theta > math.pi * (7/8):
             correctAction = self.LEFT
-        else if math.pi * (1/8) > theta and theta > math.pi * (-1/8):
+        elif math.pi * (1/8) > theta and theta > math.pi * (-1/8):
             correctAction = self.RIGHT
-        else if math.pi * (-1/8) > theta > math.pi * (-3/8):
+        elif math.pi * (-1/8) > theta and theta > math.pi * (-3/8):
             correctAction = self.DOWN_RIGHT
-        else if math.pi * (-3/8) > theta > math.pi * (-5/8):
+        elif math.pi * (-3/8) > theta and theta > math.pi * (-5/8):
             correctAction = self.DOWN
-        else if math.pi * (-5/8) > theta > math.pi * (-7/8):
+        elif math.pi * (-5/8) > theta and theta > math.pi * (-7/8):
             correctAction = self.DOWN_LEFT
         else:
             correctAction = self.DO_NOTHING

@@ -116,6 +116,11 @@ class RatEnvironment(gym.Env):
         cat.strat_force_x = cat.max_force * math.cos(angleToTarget)
         cat.strat_force_y = cat.max_force * math.sin(angleToTarget)
         cat.rk4_step()
+        if cat.x <= 0:
+            cat.x = self.maxX + cat.x
+        if cat.y <= 0:
+            cat.y = self.maxY + cat.y
+
 
 
 

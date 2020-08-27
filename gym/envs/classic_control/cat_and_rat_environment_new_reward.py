@@ -177,9 +177,13 @@ class CatAndRatEnvNewReward(gym.Env):
         )
         reward = 0
         if action == correctAction:
-            reward = 1
+            reward = 10
         else:
-            reward = -1
+            reward = -100
+        
+        if checkIfCatch == True:
+            reward = 100
+            
 
 
 

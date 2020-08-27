@@ -106,6 +106,11 @@ register(
     entry_point='gym.envs.classic_control:CatAndRatEnvNewReward'
 )
 
+register(
+    id='RatEnvironment-v0',
+    entry_point='gym.envs.classic_control:RatEnvironment'
+)
+
 # Box2d
 # ----------------------------------------
 

@@ -38,7 +38,7 @@ class CatAndRatEnvFixedRat(gym.Env):
         global cat
         global rat
         cat = DynamicsSimulator(m = 1, positions = [self.randomX, self.randomY], damping = 5, dt = (1/60), max_force = 800)
-        rat = DynamicsSimulator(m = 1, positions = [self.randomX, self.randomY], damping = 1, dt = (1/60, max_force = 11)
+        rat = DynamicsSimulator(m = 1, positions = [self.randomX, self.randomY], damping = 1, dt = (1/60), max_force = 11)
 
         high = np.array([self.maxX,
                          self.maxY,

@@ -113,8 +113,8 @@ class RatEnvironment(gym.Env):
             rat.y = self.maxY + rat.y
 
         angleToTarget = math.atan2(cat.y - rat.y, cat.x - rat.x)
-        cat.strat_force_x = cat.max_force * math.cos(angleToTarget)
-        cat.strat_force_y = cat.max_force * math.sin(angleToTarget)
+        cat.strat_force_x = cat.max_force * math.cos(angleToTarget + math.pi)
+        cat.strat_force_y = cat.max_force * math.sin(angleToTarget + math.pi)
         cat.rk4_step()
         if cat.x <= 0:
             cat.x = self.maxX + cat.x

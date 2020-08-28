@@ -144,7 +144,7 @@ class CatAndRatEnvFixedRat(gym.Env):
 
         self.totalFrames -= 1
         checkIfCatch = bool(
-            abs(cat.x - rat.x) < 2 and abs(cat.y - rat.y) < 2
+            abs(cat.x - rat.x) < 11.5 and abs(cat.y - rat.y) < 11.5
         )
         timesUp = bool(self.totalFrames == 0)
         done = bool(

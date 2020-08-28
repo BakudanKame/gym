@@ -110,6 +110,11 @@ class CatAndRatEnv(gym.Env):
             cat.x = self.maxX + cat.x
         if cat.y <= 0:
             cat.y = self.maxY + cat.y
+        
+        if cat.x >= self.maxX:
+            cat.x = cat.x - self.maxX
+        if cat.y >= self.maxY:
+            cat.y = cat.y - self.maxY
         #rat decides if it should turn or not
         counter = 1
         if counter == 1:
@@ -130,6 +135,11 @@ class CatAndRatEnv(gym.Env):
             rat.x = self.maxX + rat.x
         if rat.y <= 0:
             rat.y = self.maxY + rat.y
+        
+        if rat.x >= self.maxX:
+            rat.x = rat.x - self.maxX
+        if rat.y >= self.maxY:
+            rat.y = rat.y - self.maxY
 
         xSep2 = cat.x - rat.x
         ySep2 = cat.y - rat.y

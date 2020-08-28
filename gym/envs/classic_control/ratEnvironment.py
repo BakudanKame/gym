@@ -62,6 +62,8 @@ class RatEnvironment(gym.Env):
 
         self.action_space = spaces.Discrete(9)
         self.observation_space = spaces.Box(low, high, dtype=np.float32)
+        self.state = None
+        self.viewer = None
 
     def step(self, action):
         xSep1 = cat.x - rat.x

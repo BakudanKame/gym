@@ -62,6 +62,9 @@ class CatAndRatEnvFixedRat(gym.Env):
 
         self.action_space = spaces.Discrete(9)
         self.observation_space = spaces.Box(low, high, dtype=np.float32)
+        
+        self.viewer = None
+        self.state = None
 
     def step(self, action):
         xSep1 = cat.x - rat.x

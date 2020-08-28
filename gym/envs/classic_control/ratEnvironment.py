@@ -229,7 +229,7 @@ class RatEnvironment(gym.Env):
         
         self.rattrans.set_translation((rat.x)/2, (rat.y)/2)
 
-        return self.viewer,render(return_rgb_array=mode == 'rgb_array')
+        return self.viewer.render(return_rgb_array=mode == 'rgb_array')
 
     def close(self):
         if self.viewer:

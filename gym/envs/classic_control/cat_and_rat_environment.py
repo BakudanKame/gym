@@ -186,13 +186,50 @@ class CatAndRatEnv(gym.Env):
         self.state = (cat.x, cat.y, rat.x, rat.y, cat.v_x, cat.v_y, rat.v_x, rat.v_y)
         return np.array(self.state)
 
-    def render(self, mode='console'):
-        if mode != 'console':
-            raise NotImplementedError()
-        print("Working...")
+    def render(self, mode='human'):
+        screenWidth = 1500
+        screenHeight = 800
+        world_width = 1500
+        scale = screenWidth/world_width
+        caty = 16
+        raty = 16
+        catx = 16
+        ratx = 16
+
+        if self.viewer is None:
+            from gym.envs.classic_control import rendering
+            self.viewer = rendering.Viewer(screenWidth, screenHeight)
+            catL, catR, catT, catB = -catx/2, catx/2, caty/2, -caty/2
+            ratL, ratR, ratT, ratB = -ratx/2, ratx/2, raty/2, -raty/2
+
+            catPic = rendering.FilledPolygon([(catL, catB), (catL, catT), (catR, catT), (catR, catB)])
+            catPic.set_color(255, 0, 0)
+            self.cattrans = rendering.Transform()
+
+            ratPic = rendering.FilledPolygon([(ratL, ratB), (ratL, ratT), (ratR, ratT), (ratR, ratB)])
+            ratPic.set_color(0, 191, 255)
+            self.rattrans = rendering.Transform()
+
+
+            catPic.add_attr(self.cattrans)
+            ratPic.add_attr(self.rattrans)
+
+            self.viewer.add_geom(catPic)
+            self.viewer.add_geom(ratPic)
+
+        if self.state is None:
+            return None
+    
+        self.cattrans.set_translation((cat.x)/2, (cat.y)/2)
+        
+        self.rattrans.set_translation((rat.x)/2, (rat.y)/2)
+
+        return self.viewer.render(return_rgb_array=mode == 'rgb_array')
 
     def close(self):
-        pass
+        if self.viewer:
+            self.viewer.close()
+            self.viewer = None
 
 class DynamicsSimulator:
     def __init__(self, m, positions, velocities = [0, 0], damping = 0, dt = .01666667, max_force = 5):

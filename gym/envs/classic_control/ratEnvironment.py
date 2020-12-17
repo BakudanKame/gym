@@ -39,56 +39,59 @@ class RatEnvironment(gym.Env):
         self.observation_space = spaces.Box(low, high, dtype=np.float32)
         self.state = None
         self.viewer = None
-    
-    
-    def step(self, action):
-	    
-	    x = cat.x - rat.x
-	    y = cat.y - rat.y
-	    
-	    SCREEN_WIDTH = self.maxX
-	    SCREEN_HEIGHT = self.maxY
-	    
-	    if x > SCREEN_WIDTH/2:
-                x = x - SCREEN_WIDTH
-            elif x < -SCREEN_WIDTH/2:
-                x = x + SCREEN_WIDTH
 
-            if y > SCREEN_HEIGHT/2:
-                y = y - SCREEN_HEIGHT
-            elif y < -SCREEN_HEIGHT/2:
-                y = y + SCREEN_HEIGHT
+
+
+
+        def step(self, action):
+
+        x = cat.x - rat.x
+        y = cat.y - rat.y
+
+        SCREEN_WIDTH = self.maxX
+        SCREEN_HEIGHT = self.maxY
+
+        if x > SCREEN_WIDTH/2:
+            x = x - SCREEN_WIDTH
+
+        elif x < -SCREEN_WIDTH/2:
+            x = x + SCREEN_WIDTH
+
+        if y > SCREEN_HEIGHT/2:
+            y = y - SCREEN_HEIGHT
+        elif y < -SCREEN_HEIGHT/2:
+            y = y + SCREEN_HEIGHT
 
         angle = math.atan2(y, x) + math.pi
 
         distanceBetween = math.sqrt(x**2+y**2)
 
-                
+
         xEval = angle + action
 
         xEval = xEval % (2 * math.pi)
 
         if xEval < 0:
             xEval = xEval + 2 * math.pi
-                
+
 
         rat.strat_force_x = 1100 * math.cos(xEval)
         rat.strat_force_y = 1100 * math.sin(xEval)
-            
+
         rat.rk4_step()
-        
+
         if rat.x <= 0:
             rat.x = self.maxX + rat.x
         if rat.y <= 0:
             rat.y = self.maxY + rat.y
-        
+
         if rat.x >= self.maxX:
             rat.x = rat.x - self.maxX
         if rat.y >= self.maxY:
             rat.y = rat.y - self.maxY
-            
-            
-        #TEST CAT    
+
+
+        #TEST CAT
         angleToTarget = math.atan2(cat.y - rat.y, cat.x - rat.x)
         cat.strat_force_x = cat.max_force * math.cos(angleToTarget + math.pi)
         cat.strat_force_y = cat.max_force * math.sin(angleToTarget + math.pi)
@@ -97,15 +100,15 @@ class RatEnvironment(gym.Env):
             cat.x = self.maxX + cat.x
         if cat.y <= 0:
             cat.y = self.maxY + cat.y
-            
+
         if cat.x >= self.maxX:
             cat.x = cat.x - self.maxX
         if cat.y >= self.maxY:
             cat.y = cat.y - self.maxY
-            
+
         #END TEST CAT
-        
-        
+
+
         xSep2 = cat.x - rat.x
         ySep2 = cat.y - rat.y
 
@@ -133,8 +136,8 @@ class RatEnvironment(gym.Env):
         self.state = (distance2)
         info = {}
         return np.array(self.state), reward, done, info
-        
-        
+
+
     def reset(self):
         self.totalFrames = 3600
         cat.x = self.maxX * random.random()
@@ -155,13 +158,13 @@ class RatEnvironment(gym.Env):
 
         distance3 = math.sqrt((xSep3)**2 + (ySep3)**2)
 
-        
+
         self.state = (distance3)
         return np.array(self.state)
 
 
-            
-        
+
+
     def render(self, mode='human'):
         screenWidth = 800
         screenHeight = 600
@@ -195,9 +198,9 @@ class RatEnvironment(gym.Env):
 
         if self.state is None:
             return None
-    
+
         self.cattrans.set_translation((cat.x)/2, (cat.y)/2)
-        
+
         self.rattrans.set_translation((rat.x)/2, (rat.y)/2)
 
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')

@@ -7,20 +7,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
+
 class RatEnvironment(gym.Env):
     metadata = {'render.modes': ['console']}
-    #ACTION CONSTANTS
-    LEFT = 8
-    RIGHT = 1
-    UP = 2
-    DOWN = 3
-    UP_LEFT = 4
-    UP_RIGHT = 5
-    DOWN_LEFT = 6
-    DOWN_RIGHT = 7
-    DO_NOTHING = 0
-
-
 
     def __init__(self):
         super(RatEnvironment, self).__init__()
@@ -40,75 +29,54 @@ class RatEnvironment(gym.Env):
         cat = DynamicsSimulator(m = 1, positions = [self.randomX, self.randomY], damping = -2, dt = (1/60), max_force = 800)
         rat = DynamicsSimulator(m = 1, positions = [self.randomX, self.randomY], damping = -5, dt = (1/60), max_force = 1100)
 
-        high = np.array([self.maxX,
-                         self.maxY,
-                         self.maxX,
-                         self.maxY,
-                         np.finfo(np.float32).max,
-                         np.finfo(np.float32).max,
-                         np.finfo(np.float32).max,
-                         np.finfo(np.float32).max],
+        high = np.array([np.finfo(np.float32).max],
                         dtype=np.float32)
 
-        low = np.array([self.minX,
-                        self.minY,
-                        self.minX,
-                        self.minY,
-                        np.finfo(np.float32).min,
-                        np.finfo(np.float32).min,
-                        np.finfo(np.float32).min,
-                        np.finfo(np.float32).min],
+        low = np.array([np.finfo(np.float32).min],
                        dtype=np.float32)
 
-        self.action_space = spaces.Discrete(9)
+        self.action_space = spaces.Box(np.array([0]), np.array([math.pi * 2]), dtype=np.float32)
         self.observation_space = spaces.Box(low, high, dtype=np.float32)
         self.state = None
         self.viewer = None
-
+    
+    
     def step(self, action):
-        xSep1 = cat.x - rat.x
-        ySep1 = cat.y - rat.y
+	    
+	    x = cat.x - rat.x
+	    y = cat.y - rat.y
+	    
+	    SCREEN_WIDTH = self.maxX
+	    SCREEN_HEIGHT = self.maxY
+	    
+	    if x > SCREEN_WIDTH/2:
+                x = x - SCREEN_WIDTH
+            elif x < -SCREEN_WIDTH/2:
+                x = x + SCREEN_WIDTH
 
-        if xSep1 > 0.5 * self.maxX:
-            xSep1 = self.maxX - xSep1
-        if ySep1 > 0.5 * self.maxY:
-            ySep1 = self.maxY - ySep1
+            if y > SCREEN_HEIGHT/2:
+                y = y - SCREEN_HEIGHT
+            elif y < -SCREEN_HEIGHT/2:
+                y = y + SCREEN_HEIGHT
 
-        distance1 = math.sqrt((xSep1)**2 + (ySep1)**2)
+        angle = math.atan2(y, x) + math.pi
 
+        distanceBetween = math.sqrt(x**2+y**2)
 
-        if action == self.LEFT:
-            rat.strat_force_x = -rat.max_force
-            rat.strat_force_y = 0
-        elif action == self.RIGHT:
-            rat.strat_force_x = rat.max_force
-            rat.strat_force_y = 0
-        elif action == self.UP:
-            rat.strat_force_y = rat.max_force
-            rat.strat_force_x = 0
-        elif action == self.DOWN:
-            rat.strat_force_y = -rat.max_force
-            rat.strat_force_x = 0
-        elif action == self.UP_LEFT:
-            rat.strat_force_x = -rat.max_force * math.cos(math.pi * 0.25)
-            rat.strat_force_y = rat.max_force * math.sin(math.pi * 0.25) #feed 0 back to the JS simulator, equate this with left key down?
-        elif action == self.UP_RIGHT:
-            rat.strat_force_x = rat.max_force * math.cos(math.pi * 0.25)
-            rat.strat_force_y = rat.max_force * math.sin(math.pi * 0.25)
-        elif action == self.DOWN_LEFT:
-            rat.strat_force_x = -rat.max_force * math.cos(math.pi * 0.25)
-            rat.strat_force_y = -rat.max_force * math.sin(math.pi * 0.25)
-        elif action == self.DOWN_RIGHT:
-            rat.strat_force_x = rat.max_force * math.cos(math.pi * 0.25)
-            rat.strat_force_y = -rat.max_force * math.sin(math.pi * 0.25)
-        elif action == self.DO_NOTHING:
-            rat.strat_force_x = 0
-            rat.strat_force_y = 0
-        else:
-            raise ValueError("Recived invalid action!")
+                
+        xEval = angle + action
 
+        xEval = xEval % (2 * math.pi)
+
+        if xEval < 0:
+            xEval = xEval + 2 * math.pi
+                
+
+        rat.strat_force_x = 1100 * math.cos(xEval)
+        rat.strat_force_y = 1100 * math.sin(xEval)
+            
         rat.rk4_step()
-        #Enforces toroidal space on cat
+        
         if rat.x <= 0:
             rat.x = self.maxX + rat.x
         if rat.y <= 0:
@@ -119,7 +87,8 @@ class RatEnvironment(gym.Env):
         if rat.y >= self.maxY:
             rat.y = rat.y - self.maxY
             
-
+            
+        #TEST CAT    
         angleToTarget = math.atan2(cat.y - rat.y, cat.x - rat.x)
         cat.strat_force_x = cat.max_force * math.cos(angleToTarget + math.pi)
         cat.strat_force_y = cat.max_force * math.sin(angleToTarget + math.pi)
@@ -133,32 +102,10 @@ class RatEnvironment(gym.Env):
             cat.x = cat.x - self.maxX
         if cat.y >= self.maxY:
             cat.y = cat.y - self.maxY
-
-
-
-
-        #rat decides if it should turn or not
-
-        #counter = 1
-        #if counter == 1:
-        #    counter += 1
-        #    if random.random() < 0.33:
-        #        rat.theta += 0.1
-        #    elif random.random() > 0.66:
-        #        rat.theta -= 0.1
-        #else:
-        #    counter -= 1
-
-        #rat.strat_force_x = rat.max_force * math.cos(rat.theta)
-        #rat.strat_force_y = rat.max_force * math.sin(rat.theta)
-
-        #rat.rk4_step()
-        #Enforces toroidal space on rat
-        #if rat.x <= 0:
-        #    rat.x = self.maxX + rat.x
-        #if rat.y <= 0:
-            #rat.y = self.maxY + rat.y
-
+            
+        #END TEST CAT
+        
+        
         xSep2 = cat.x - rat.x
         ySep2 = cat.y - rat.y
 
@@ -183,12 +130,11 @@ class RatEnvironment(gym.Env):
         else:
             reward = 0
 
-
-            #theta = x; maybe include theta later?
-        self.state = (cat.x, cat.y, rat.x, rat.y, cat.v_x, cat.v_y, rat.v_x, rat.v_y)
+        self.state = (distance2)
         info = {}
         return np.array(self.state), reward, done, info
-
+        
+        
     def reset(self):
         self.totalFrames = 3600
         cat.x = self.maxX * random.random()
@@ -199,9 +145,23 @@ class RatEnvironment(gym.Env):
         rat.v_x, rat.v_y = 0, 0
         cat.strat_force_x, cat.strat_force_y = 0, 0
         rat.strat_force_x, rat.strat_force_y = 0, 0
-        self.state = (cat.x, cat.y, rat.x, rat.y, cat.v_x, cat.v_y, rat.v_x, rat.v_y)
+        xSep3 = cat.x - rat.x
+        ySep3 = cat.y - rat.y
+
+        if xSep3 > 0.5 * self.maxX:
+            xSep3 = self.maxX - xSep3
+        if ySep3 > 0.5 * self.maxY:
+            ySep3 = self.maxY - ySep3
+
+        distance3 = math.sqrt((xSep3)**2 + (ySep3)**2)
+
+        
+        self.state = (distance3)
         return np.array(self.state)
 
+
+            
+        
     def render(self, mode='human'):
         screenWidth = 1500
         screenHeight = 800
@@ -246,6 +206,8 @@ class RatEnvironment(gym.Env):
         if self.viewer:
             self.viewer.close()
             self.viewer = None
+
+
 
 class DynamicsSimulator:
     def __init__(self, m, positions, velocities = [0, 0], damping = 0, dt = .01666667, max_force = 5):

@@ -30,7 +30,7 @@ class RatEnvironment(gym.Env):
         rat = DynamicsSimulator(m = 1, positions = [self.randomX, self.randomY], damping = -5, dt = (1/60), max_force = 1100)
 
 
-        self.action_space = spaces.Box(np.array([1]), np.array([-1]), dtype=np.float32)
+        self.action_space = spaces.Box(np.array([1]), np.array([-1]))
         self.observation_space = spaces.Box(np.array([0]), np.array([500]))
         self.state = None
         self.viewer = None

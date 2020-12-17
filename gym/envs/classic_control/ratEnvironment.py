@@ -128,7 +128,7 @@ class RatEnvironment(gym.Env):
         if checkIfCatch == False:
             reward = 1
         else:
-            reward = -80
+            reward = 0
 
         self.state = distance2
         info = {}

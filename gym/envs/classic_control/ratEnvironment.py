@@ -29,14 +29,9 @@ class RatEnvironment(gym.Env):
         cat = DynamicsSimulator(m = 1, positions = [self.randomX, self.randomY], damping = -2, dt = (1/60), max_force = 800)
         rat = DynamicsSimulator(m = 1, positions = [self.randomX, self.randomY], damping = -5, dt = (1/60), max_force = 1100)
 
-        high = np.array([np.finfo(np.float32).max],
-                        dtype=np.float32)
-
-        low = np.array([np.finfo(np.float32).min],
-                       dtype=np.float32)
 
         self.action_space = spaces.Box(np.array([0]), np.array([math.pi * 2]), dtype=np.float32)
-        self.observation_space = spaces.Box(low, high, dtype=np.float32)
+        self.observation_space = spaces.Box(np.array([0]), np.array([500]))
         self.state = None
         self.viewer = None
 
@@ -133,9 +128,9 @@ class RatEnvironment(gym.Env):
         else:
             reward = 0
 
-        self.state = (distance2)
+        self.state = distance2
         info = {}
-        return np.array(self.state), reward, done, info
+        return np.array([self.state]), reward, done, info
 
 
     def reset(self):
@@ -159,8 +154,8 @@ class RatEnvironment(gym.Env):
         distance3 = math.sqrt((xSep3)**2 + (ySep3)**2)
 
 
-        self.state = (distance3)
-        return np.array(self.state)
+        self.state = distance3
+        return np.array([self.state])
 
 
 

@@ -15,8 +15,8 @@ class RatEnvironment(gym.Env):
         super(RatEnvironment, self).__init__()
 
 
-        self.maxY = 800 #replace with screenHeight from Game
-        self.maxX = 1500 #replace with screenWidth from Game
+        self.maxY = 600 #replace with screenHeight from Game
+        self.maxX = 800 #replace with screenWidth from Game
         self.maxTheta = 2 * math.pi
         self.minX = 0
         self.minY = 0
@@ -163,9 +163,9 @@ class RatEnvironment(gym.Env):
             
         
     def render(self, mode='human'):
-        screenWidth = 1500
-        screenHeight = 800
-        world_width = 1500
+        screenWidth = 800
+        screenHeight = 600
+        world_width = 800
         scale = screenWidth/world_width
         caty = 16
         raty = 16

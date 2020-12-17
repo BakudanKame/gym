@@ -6,9 +6,6 @@ import random
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-import js2py
-
-from js import js
 
 
 class RatEnvironment(gym.Env):
@@ -29,9 +26,8 @@ class RatEnvironment(gym.Env):
         self.totalFrames = 3600
         global cat
         global rat
-        spawnAngle = random.uniform(0, math.pi * 2)
+        cat = DynamicsSimulator(m = 1, positions = [self.randomX, self.randomY], damping = -2, dt = (1/60), max_force = 800)
         rat = DynamicsSimulator(m = 1, positions = [self.randomX, self.randomY], damping = -5, dt = (1/60), max_force = 1100)
-        cat = DynamicsSimulator(m = 1, positions = [rat.x + 200*math.cos(spawnAngle), rat.y + 200*math.sin(spawnAngle)], damping = -2, dt = (1/60), max_force = 800)
 
 
         self.action_space = spaces.Box(np.array([1]), np.array([-1]))
@@ -248,10 +244,21 @@ class DynamicsSimulator:
         return accelerations
 
     def rk4_step(self):
-        posVelArray = js.rk4(self.x, self.y, self.strat_force_x, self.strat_force_y, self.damping, self.v_x, self.v_y)
-        self.x = posVelArray[0]
-        self.y = posVelArray[1]
-        self.v_x = posVelArray[2]
-        self.v_y = posVelArray[3]
-        
-        
+        current_positions = np.array([self.x, self.y])
+        current_velocities = np.array([self.v_x, self.v_y])
+        # numerics to calculate coefficients:
+        pos_k1 = self.dt * self.vel_func(current_positions, current_velocities, self.t)
+        vel_k1 = self.dt * self.accel_func(current_positions, current_velocities, self.t)
+        pos_k2 = self.dt * self.vel_func(current_positions + (pos_k1 / 2), current_velocities + (vel_k1 / 2 ), self.t + (self.dt / 2))
+        vel_k2 = self.dt * self.accel_func(current_positions + (pos_k1 / 2), current_velocities + (vel_k1 / 2), self.t + (self.dt / 2))
+        pos_k3 = self.dt * self.vel_func(current_positions + (pos_k2 / 2), current_velocities + (vel_k2 / 2), self.t + (self.dt / 2))
+        vel_k3 = self.dt * self.accel_func(current_positions + (pos_k2 / 2), current_velocities + (vel_k2 / 2), self.t + (self.dt / 2))
+        pos_k4 = self.dt * self.vel_func(current_positions + pos_k3, current_velocities + vel_k3, self.t + self.dt)
+        vel_k4 = self.dt * self.accel_func(current_positions + pos_k3, current_velocities + vel_k3, self.t + self.dt)
+        # update according to rk4 formula:
+        new_positions = current_positions + ((1/6) * (pos_k1 + 2*pos_k2 + 2*pos_k3 + pos_k4))
+        new_velocites = current_velocities + ((1/6) * (vel_k1 + 2*vel_k2 + 2*vel_k3 + vel_k4))
+        # load new values into instance attributes:
+        self.x, self.y = new_positions[0], new_positions[1]
+        self.v_x, self.v_y = new_velocites[0], new_velocites[1]
+        self.t += self.dt

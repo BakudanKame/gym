@@ -30,7 +30,7 @@ class RatEnvironment(gym.Env):
         rat = DynamicsSimulator(m = 1, positions = [self.randomX, self.randomY], damping = -5, dt = (1/60), max_force = 1100)
 
 
-        self.action_space = spaces.Box(np.array([0]), np.array([math.pi * 2]), dtype=np.float32)
+        self.action_space = spaces.Box(np.array([1]), np.array([-1]), dtype=np.float32)
         self.observation_space = spaces.Box(np.array([0]), np.array([500]))
         self.state = None
         self.viewer = None
@@ -60,9 +60,10 @@ class RatEnvironment(gym.Env):
         angle = math.atan2(y, x) + math.pi
 
         distanceBetween = math.sqrt(x**2+y**2)
+        
+        theta = action * math.pi
 
-
-        xEval = angle + action
+        xEval = angle + theta
 
         xEval = xEval % (2 * math.pi)
 

@@ -43,7 +43,7 @@ class RatEnvironment(gym.Env):
 
 
 
-        def step(self, action):
+    def step(self, action):
 
         x = cat.x - rat.x
         y = cat.y - rat.y

@@ -26,8 +26,9 @@ class RatEnvironment(gym.Env):
         self.totalFrames = 3600
         global cat
         global rat
-        cat = DynamicsSimulator(m = 1, positions = [self.randomX, self.randomY], damping = -2, dt = (1/60), max_force = 800)
+        spawnAngle = random.uniform(0, math.pi * 2)
         rat = DynamicsSimulator(m = 1, positions = [self.randomX, self.randomY], damping = -5, dt = (1/60), max_force = 1100)
+        cat = DynamicsSimulator(m = 1, positions = [rat.x + 200*math.cos(spawnAngle), rat.y + 200*math.sin(spawnAngle)], damping = -2, dt = (1/60), max_force = 800)
 
 
         self.action_space = spaces.Box(np.array([1]), np.array([-1]))
